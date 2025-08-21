@@ -1,18 +1,40 @@
-export const GET_ALL_USERS = `
-    SELECT * FROM users;
-`;
+import { Usuario } from "../models/usuarios.models.js";
 
-export const GET_USER_BY_ID = `
-    SELECT * FROM users
-    WHERE id_user = ?;
-`;
+// Obtener todos los usuarios
+export const serv_getAllUsers = async () => {
+    return await Usuario.findAll({
+        attributes: { exclude: ['password'] }
+    });
+};
 
-export const INSERT_USER = `
-    INSERT INTO users (username, password, first_name, last_name, email)
-    VALUES (?, ?, ?, ?, ?);
-`;
+// Obtener usuario por id
+export const serv_getUserById = async (id) => {
+    return await Usuario.findByPk(id, {
+        attributes: { exclude: ['password'] }
+    });
+};
 
-export const DELETE_USER = `
-    DELETE FROM users
-    WHERE id_user = ?;
-`;
+// Crear un usuario y devolverlo sin contraseña
+export const serv_createUser = async (data) => {
+    const user = await Usuario.create(data);
+    const { password, ...userWithoutPassword } = user.get({ plain: true });
+    return userWithoutPassword;
+};
+
+// Actualizar datos de un usuario
+export const serv_updateUserById = async (id, newData) => {
+    const user = await Usuario.findByPk(id);
+    if (!user) return null;
+    await user.update(newData);
+    const { password, ...userWithoutPassword } = user.get({ plain: true });
+    return userWithoutPassword;
+};
+
+// Eliminar un usuario por ID
+export const serv_deleteUserById = async (id) => {
+    const user = await Usuario.findByPk(id);
+    if (!user) return null;
+    await user.destroy();
+    const { password, ...userWithoutPassword } = user.get({ plain: true });
+    return userWithoutPassword; // opcional
+};

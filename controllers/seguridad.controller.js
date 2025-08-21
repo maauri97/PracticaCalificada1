@@ -1,9 +1,8 @@
 import pool from "../config/db.js";
 import {
-  GET_ALL_USERS,
-  GET_USER_BY_ID,
-  INSERT_USER,
-  DELETE_USER,
+  serv_getAllUsers,
+  serv_getUserById,
+  serv_createUser
 } from "../services/usuarios.services.js";
 
 // Autentificar usuario
@@ -59,4 +58,4 @@ export const unblockUser = async (req, res) => {
     console.error("Error al desbloquear usuario:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
-};
+}; 
