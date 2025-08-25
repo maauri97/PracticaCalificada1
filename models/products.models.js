@@ -24,6 +24,11 @@ export const Product = orm.define(
       allowNull: false,
       validate: { len: [1, 255] },
     },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: { len: [1, 100] },
+    }
   },
   {
     tableName: "products",
@@ -56,11 +61,11 @@ export const create = async (objProducto) => {
     price: objProducto.price,
     description: objProducto.description,
   });
-  return nuevo.idproducts;
+  return nuevo;
 };
 
 export const update = async (id, objProducto) => {
-  const [rows] = await Product.update(
+  const updatedProduct = await Product.update(
     {
       name: objProducto.name,
       price: objProducto.price,
@@ -68,8 +73,25 @@ export const update = async (id, objProducto) => {
     },
     { where: { idproducts: id } }
   );
-  return rows;
+  return updatedProduct;
 };
+
+export const updateImage = async function(id, filename) {
+  try {
+    const [updatedRows] = await Product.update({
+      image: filename
+    }, {
+      where: {
+        idproducts: id
+      }
+    });
+    console.log(updatedRows);
+    return updatedRows;
+  } catch(error){
+    console.error("Error: ", error);
+    throw error;
+  }
+}
 
 export const deletes = async (id) => {
   const rows = await Product.destroy({ where: { idproducts: id } });

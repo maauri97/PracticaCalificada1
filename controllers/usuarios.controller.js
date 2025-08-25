@@ -6,7 +6,7 @@ import { ValidationError, UniqueConstraintError } from "sequelize";
 // Devolver todos los usuarios
 export const getAllUsers = async (req, res) => {
     try {
-        const usuarios = await sUsuario.serv_getAllUsers();
+        const usuarios = await sUsuario.getAllUsers();
         res.status(200).json(usuarios);
     } catch (error) {
         console.error("Error en controlador getAllUsers:", error);
@@ -25,7 +25,7 @@ export const getUserByUsername = async (req, res) => {
         }
 
         // Consulta en base al parámetro
-        const user = await sUsuario.serv_getUserByUsername(username);
+        const user = await sUsuario.getUserByUsername(username);
 
         // Validar que se ha encontrado info en la BD
         if (!user || user.length === 0) {
@@ -52,7 +52,7 @@ export const getUserById = async (req, res) => {
         }
 
         // Consulta en base al parámetro
-        const user = await sUsuario.serv_getUserById(id);
+        const user = await sUsuario.getUserById(id);
 
         // Validar que se ha encontrado info en la BD
         if (!user || user.length === 0) {
@@ -73,11 +73,12 @@ export const createUser = async (req, res) => {
     try {
 
         // Validar data del body
+        console.log('1))) req.body:',req.body)
         const data = req.body;
         if (!data) {
             return res.status(400).json({ error: "No hay body" });
         }
-        if (!data.username || !data.password || !data.first_name || !data.last_name || !data.email) {
+        if (!data.username || !data.password || !data.name || !data.surname || !data.email) {
             return res.status(400).json({ error: "Faltan datos obligatorios (username, password, first_name, last_name, email)" });
         }
 
@@ -87,10 +88,10 @@ export const createUser = async (req, res) => {
         }
 
         // Encriptar la contraseña
-        data.password = await bcrypt.hash(data.password, BCRYPT_ROUNDS);
+        // data.password = await bcrypt.hash(data.password, BCRYPT_ROUNDS);
 
         // Añadir a la BD y devolver nuevo usuario
-        const newUser = await sUsuario.serv_createUser(data);
+        const newUser = await sUsuario.createUser(data);
         res.status(201).json(newUser);
 
     } catch (error) {
@@ -131,12 +132,12 @@ export const updateUser = async (req, res) => {
         }
 
         // Si se quiere actualizar la contraseña, encriptarla
-        if (newData.password) {
+        /* if (newData.password) {
             newData.password = await bcrypt.hash(newData.password, BCRYPT_ROUNDS);
-        }
+        } */
 
         // Actualizar si existe el usuario. Si no, devolver el error
-        const updatedUser = await sUsuario.serv_updateUserById(id, newData);
+        const updatedUser = await sUsuario.updateUserById(id, newData);
         if (!updatedUser) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }
@@ -178,7 +179,7 @@ export const deleteUser = async (req, res) => {
         }
 
         // Eliminar el usuario. Si no existe, avisar
-        const deletedUser = await sUsuario.serv_deleteUserById(id);
+        const deletedUser = await sUsuario.deleteUserById(id);
         if (!deletedUser) {
             return res.status(404).json({ error: "Usuario no encontrado" });
         }

@@ -1,29 +1,29 @@
-import { Usuario } from "../models/usuarios.models.js";
+import * as modelUser from "../models/usuarios.models.js";
 
 // Obtener todos los usuarios
-export const serv_getAllUsers = async () => {
-    return await Usuario.findAll({
+export const getAllUsers = async () => {
+    return await modelUser.Usuario.findAll({
         attributes: { exclude: ['password'] }
     });
 };
 
 // Obtener usuario por id
-export const serv_getUserById = async (id) => {
-    return await Usuario.findByPk(id, {
+export const getUserById = async (id) => {
+    return await modelUser.Usuario.findByPk(id, {
         attributes: { exclude: ['password'] }
     });
 };
 
 // Crear un usuario y devolverlo sin contraseña
-export const serv_createUser = async (data) => {
-    const user = await Usuario.create(data);
+export const createUser = async (data) => {
+    const user = await modelUser.Usuario.create(data);
     const { password, ...userWithoutPassword } = user.get({ plain: true });
     return userWithoutPassword;
 };
 
 // Actualizar datos de un usuario
-export const serv_updateUserById = async (id, newData) => {
-    const user = await Usuario.findByPk(id);
+export const updateUserById = async (id, newData) => {
+    const user = await modelUser.Usuario.findByPk(id);
     if (!user) return null;
     await user.update(newData);
     const { password, ...userWithoutPassword } = user.get({ plain: true });
@@ -31,10 +31,17 @@ export const serv_updateUserById = async (id, newData) => {
 };
 
 // Eliminar un usuario por ID
-export const serv_deleteUserById = async (id) => {
-    const user = await Usuario.findByPk(id);
+export const deleteUserById = async (id) => {
+    const user = await modelUser.Usuario.findByPk(id);
     if (!user) return null;
     await user.destroy();
     const { password, ...userWithoutPassword } = user.get({ plain: true });
     return userWithoutPassword; // opcional
+};
+
+export const login = async function(objUsuario) {
+    console.log("------------service------------");
+    let results= await modelUser.login(objUsuario);
+    console.log('Login results: ',results);
+    return results;
 };
